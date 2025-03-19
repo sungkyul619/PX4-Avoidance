@@ -1,0 +1,70 @@
+<launch>
+
+    <arg name="ns" default="/"/>
+
+    <!-- stereo.launch에서 사용할 때 model: "iris_stereo_camera"  -->
+    <arg name="fcu_url" default="udp://:14540@localhost:14557"/>
+    <arg name="gcs_url" default="" />   <!-- udp://@l192.168.20.32:14550 -->
+    <arg name="tgt_system" default="1" />
+    <arg name="tgt_component" default="1" />
+    <!-- <arg name="vehicle" default="iris_obs_avoid"/> -->
+
+    <!-- <param name="use_sim_time" value="true" /> -->
+
+    <!-- Launch rqt_reconfigure -->
+    <node pkg="rqt_reconfigure" type="rqt_reconfigure" output="screen" name="rqt_reconfigure" />
+
+    <!-- Launch PX4 SITL -->
+    <!-- <include file="$(find px4)/launch/px4.launch">
+        <arg name="vehicle" value="$(arg vehicle)"/>
+    </include> -->
+
+    <!-- Launch MavROS -->
+    <group ns="$(arg ns)">
+        <include file="$(find mavros)/launch/node.launch">
+            <arg name="pluginlists_yaml" value="$(find mavros)/launch/px4_pluginlists.yaml" />
+            <!-- Need to change the config file to get the tf topic and get local position in terms of local origin -->
+            <arg name="config_yaml" value="$(find avoidance)/resource/px4_config.yaml" />
+            <arg name="fcu_url" value="$(arg fcu_url)" />
+            <arg name="gcs_url" value="$(arg gcs_url)" />
+            <arg name="tgt_system" value="$(arg tgt_system)" />
+            <arg name="tgt_component" value="$(arg tgt_component)" />
+        </include>
+    </group>
+
+    <!-- Define a static transform from a camera internal frame to the fcu for every camera used -->
+    <node pkg="tf" type="static_transform_publisher" name="tf_depth_camera" required="true"
+          args="0.3 0.32 -0.11 0 0 0  fcu camera_link 10"/>
+          <!-- args="0 0 0 -1.57 0 -1.57 fcu camera_link 10" -->
+
+<!-- 무슨역할? -->
+    <include file="$(find local_planner)/launch/rs_depthcloud.launch">
+    <arg name="required"              value="true"/>
+    <arg name="namespace"             value="camera" />
+    <arg name="tf_prefix"             value="camera" />
+    <arg name="serial_no"             value="843112070304"/>
+    <arg name="depth_fps"             value="30"/>
+    </include>
+
+<!-- launch avoidance -->
+    <node name="drop_camera_depth" pkg="topics_tools" type="drop" output="screen"
+    args="/camera/depth/images_rec_raw 29 30"/>
+    <node name="drop_camera_ir" pkg="topics_tools" type="drop" output="screen"
+    args="/camera/infra1/image_rect_raw 29 30"/>
+      <!-- Launch local planner -->
+  
+  <!-- <arg name="pointcloud_topics" default="[/stereo/points2]"/> -->
+  <arg name="pointcloud_topics" default="[/camera/depth/points]"/>
+  <node name="local_planner_node" pkg="local_planner" type="local_planner_node" output="screen" require="true" >
+    <param name="goal_x_param" value="0" />
+    <param name="goal_y_param" value="0"/>
+    <param name="goal_z_param" value="4" />
+    <rosparam param="pointcloud_topics" subst_value="True">$(arg pointcloud_topics)</rosparam>
+  </node>
+
+        
+    <!-- set or toggle rqt parameters ?-->
+    <node name="rqt_param_toggle" pkg="local_planner" type="rqt_param_toggle.sh" />
+
+
+</launch>

@@ -3,8 +3,10 @@
     <arg name="ns" default="/"/>
 
     <!-- stereo.launch에서 사용할 때 model: "iris_stereo_camera"  -->
-    <arg name="fcu_url" default="udp://:14540@localhost:14557"/>
-    <arg name="gcs_url" default="" />   <!-- udp://@l192.168.20.32:14550 -->
+    <!-- <arg name="fcu_url" default="udp://:14550@localhost:14557"/> -->
+    <arg name="fcu_url" default="/dev/ttyUSB0:921600" />
+    <arg name="gcs_url" default="udp://:14550@localhost:14557" />   <!-- udp://@l192.168.20.32:14550 -->
+    
     <arg name="tgt_system" default="1" />
     <arg name="tgt_component" default="1" />
     <!-- <arg name="vehicle" default="iris_obs_avoid"/> -->
@@ -47,15 +49,16 @@
     </include>
 
 <!-- launch avoidance -->
-    <node name="drop_camera_depth" pkg="topics_tools" type="drop" output="screen"
+    <node name="drop_camera_depth" pkg="topic_tools" type="drop" output="screen"
     args="/camera/depth/images_rec_raw 29 30"/>
-    <node name="drop_camera_ir" pkg="topics_tools" type="drop" output="screen"
+    <node name="drop_camera_ir" pkg="topic_tools" type="drop" output="screen"
     args="/camera/infra1/image_rect_raw 29 30"/>
       <!-- Launch local planner -->
   
   <!-- <arg name="pointcloud_topics" default="[/stereo/points2]"/> -->
+  <!-- <env name="ROSCONSOLE_CONFIG_FILE" value="$(find local_planner)/resource/custom_rosconsole.conf"/>  -->
   <arg name="pointcloud_topics" default="[/camera/depth/points]"/>
-  <node name="local_planner_node" pkg="local_planner" type="local_planner_node" output="screen" require="true" >
+  <node name="local_planner_node" pkg="local_planner" type="local_planner_node" output="screen" required="true" >
     <param name="goal_x_param" value="0" />
     <param name="goal_y_param" value="0"/>
     <param name="goal_z_param" value="4" />

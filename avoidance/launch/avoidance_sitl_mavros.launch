@@ -42,8 +42,9 @@
 
     <!-- Spawn vehicle model -->
     <node name="spawn_model" pkg="gazebo_ros" type="spawn_model" output="screen"
-          args="-sdf -file $(find realsense2_camera)/models/iris_stereo_camera/iris_stereo_camera.sdf  -model pskVehicle">
+          args="-sdf -file $(find px4)/Tools/sitl_gazebo/models/iris_stereo_camera/iris_stereo_camera.sdf -model pskVehicle">
               <!-- args="-sdf -database $(arg model) -model $(arg vehicle)">  -->
+              
     </node>
 
 </launch>

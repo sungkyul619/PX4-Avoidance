@@ -16,7 +16,6 @@
     <node pkg="rqt_reconfigure" type="rqt_reconfigure" output="screen" name="rqt_reconfigure" />
 
     <!-- Launch PX4 SITL -->
-    <!-- 이부분을 제거하고 px 장치 연결 -->
     <include file="$(find px4)/launch/px4.launch">
         <arg name="vehicle" value="$(arg vehicle)"/>
     </include>

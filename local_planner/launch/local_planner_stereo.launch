@@ -13,8 +13,6 @@
                airframe에 등록되 있어야,,
                -->
 
-
-
     <arg name="world_path" value="$(arg world_path)" />
     <arg name="pointcloud_topics" value="$(arg pointcloud_topics)"/>
   </include>

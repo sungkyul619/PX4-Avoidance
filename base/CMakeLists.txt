@@ -213,3 +213,11 @@ target_link_libraries(base_node ${catkin_LIBRARIES})
 # heartbeat
 add_executable(heartbeat src/heartbeat.cpp)
 target_link_libraries(heartbeat ${catkin_LIBRARIES})
+
+# gps
+add_executable(gps src/gps.cpp)
+target_link_libraries(gps ${catkin_LIBRARIES})
+
+# takeoff
+add_executable(takeoff src/takeoff.cpp)
+target_link_libraries(takeoff ${catkin_LIBRARIES})
